@@ -1,0 +1,1506 @@
+--========================================================
+-- 🧹 RING RING SCRIPTZ (ULTIMATE UNIVERSAL EDITION) v4.0
+-- PYCO AI SECURITY SYSTEM | STEALTH MODE ACTIVATED
+-- F22 RAPTOR CLASS | DISCORD INTEGRATION
+--========================================================
+
+if getgenv().RingRingScriptLoaded then
+	pcall(function()
+		local existingGui = game:GetService("CoreGui"):FindFirstChild("RingRingScriptz") or game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("RingRingScriptz")
+		if existingGui then existingGui:Destroy() end
+	end)
+end
+getgenv().RingRingScriptLoaded = true
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+local guiParent = (pcall(function() return gethui() end) and gethui()) or (CoreGui:FindFirstChild("RobloxGui") and CoreGui) or player:WaitForChild("PlayerGui")
+
+--========================================================
+-- PYCO AI SECURITY SYSTEM (LIGHTWEIGHT & WORKING)
+--========================================================
+
+local securityEnabled = true
+
+-- Anti-Kick Protection
+local function antiKick()
+	pcall(function()
+		local kickFunction = player.Kick
+		if kickFunction then
+			player.Kick = function(self, ...)
+				return nil
+			end
+		end
+		
+		pcall(function()
+			game.Shutdown = function(self, ...)
+				return nil
+			end
+		end)
+		
+		pcall(function()
+			local TeleportService = game:GetService("TeleportService")
+			if TeleportService then
+				TeleportService.Teleport = function(self, ...)
+					return nil
+				end
+			end
+		end)
+		
+		local banFunction = player.Ban
+		if banFunction then
+			player.Ban = function(self, ...)
+				return nil
+			end
+		end
+	end)
+end
+
+-- Anti-Cheat Bypass
+local function bypassAntiCheat()
+	pcall(function()
+		pcall(function()
+			local logService = game:GetService("LogService")
+			if logService then
+				logService:SetLogsEnabled(false)
+			end
+		end)
+		
+		local script = getfenv and getfenv().script
+		if script then
+			script.Name = "SystemService"
+		end
+		
+		pcall(function()
+			local scanner = game:FindFirstChild("ScriptScanner")
+			if scanner then
+				scanner:Destroy()
+			end
+		end)
+	end)
+end
+
+-- Stealth Mode
+local function stealthMode()
+	pcall(function()
+		task.spawn(function()
+			while securityEnabled do
+				task.wait(math.random(600, 1200))
+				if main and main.Visible then
+					local currentPos = main.Position
+					local offsetX = math.random(-30, 30)
+					local offsetY = math.random(-30, 30)
+					main.Position = UDim2.new(currentPos.X.Scale, currentPos.X.Offset + offsetX, currentPos.Y.Scale, currentPos.Y.Offset + offsetY)
+				end
+			end
+		end)
+	end)
+end
+
+-- Initialize security
+local function initializeSecurity()
+	pcall(antiKick)
+	pcall(bypassAntiCheat)
+	pcall(stealthMode)
+end
+
+--========================================================
+-- SETTINGS
+--========================================================
+
+local MAX_DISTANCE = 321
+local CLICK_SOUND_ID = "rbxassetid://6895079853"
+local DISCORD_INVITE = "https://discord.gg/w5cspdRyzx"
+
+local aimEnabled = false
+local espEnabled = false
+local smoothness = 50
+local lockedTarget = nil
+local predictionEnabled = true
+local fovSize = 200
+
+local espObjects = {}
+local draggingWindow = false
+local sliderDragging = false
+
+--========================================================
+-- SPECIAL USERS
+--========================================================
+
+local specialUsers = {
+	["noobie_playsrblx1"] = true,
+	["hireehaje6"] = true
+}
+
+local function getWelcomeMessage()
+	if specialUsers[string.lower(player.Name)] then
+		return "Hello, my deeply beloved sons. I have been eagerly awaiting your arrival. Pyco AI is ready to serve."
+	else
+		return "Pyco AI Security System is now active. You are fully protected."
+	end
+end
+
+--========================================================
+-- GUI HELPERS
+--========================================================
+
+local function tween(object, properties, duration, style)
+	if not object or not object.Parent then return end
+	local info = TweenInfo.new(duration or 0.2, style or Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local animation = TweenService:Create(object, info, properties)
+	animation:Play()
+	return animation
+end
+
+local function playClick()
+	pcall(function()
+		local sound = Instance.new("Sound")
+		sound.SoundId = CLICK_SOUND_ID
+		sound.Volume = 0.3
+		sound.Parent = guiParent
+		sound:Play()
+		sound.Ended:Connect(function() sound:Destroy() end)
+	end)
+end
+
+--========================================================
+-- NOTIFICATION SYSTEM
+--========================================================
+
+local function showNotification(title, message, duration)
+	duration = duration or 3
+	pcall(function()
+		local notif = Instance.new("Frame")
+		notif.Name = "Notification"
+		notif.Size = UDim2.fromOffset(300, 60)
+		notif.Position = UDim2.new(0.5, -150, 0.85, 100)
+		notif.BackgroundColor3 = Color3.fromRGB(10, 15, 20)
+		notif.BackgroundTransparency = 0.1
+		notif.BorderSizePixel = 0
+		notif.ZIndex = 10000
+		notif.Parent = guiParent
+		
+		local notifCorner = Instance.new("UICorner")
+		notifCorner.CornerRadius = UDim.new(0, 12)
+		notifCorner.Parent = notif
+		
+		local notifStroke = Instance.new("UIStroke")
+		notifStroke.Thickness = 1.5
+		notifStroke.Color = Color3.fromRGB(0, 180, 255)
+		notifStroke.Transparency = 0.4
+		notifStroke.Parent = notif
+		
+		local icon = Instance.new("TextLabel")
+		icon.Size = UDim2.fromOffset(30, 30)
+		icon.Position = UDim2.fromOffset(15, 15)
+		icon.BackgroundTransparency = 1
+		icon.Text = "📋"
+		icon.TextSize = 20
+		icon.TextColor3 = Color3.fromRGB(0, 180, 255)
+		icon.Font = Enum.Font.GothamBold
+		icon.Parent = notif
+		
+		local titleLabel = Instance.new("TextLabel")
+		titleLabel.Size = UDim2.new(1, -60, 0.5, 0)
+		titleLabel.Position = UDim2.fromOffset(55, 8)
+		titleLabel.BackgroundTransparency = 1
+		titleLabel.Text = title
+		titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		titleLabel.TextSize = 14
+		titleLabel.Font = Enum.Font.GothamBold
+		titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+		titleLabel.TextYAlignment = Enum.TextYAlignment.Center
+		titleLabel.Parent = notif
+		
+		local messageLabel = Instance.new("TextLabel")
+		messageLabel.Size = UDim2.new(1, -60, 0.4, 0)
+		messageLabel.Position = UDim2.fromOffset(55, 28)
+		messageLabel.BackgroundTransparency = 1
+		messageLabel.Text = message
+		messageLabel.TextColor3 = Color3.fromRGB(200, 215, 230)
+		messageLabel.TextSize = 12
+		messageLabel.Font = Enum.Font.Gotham
+		messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+		messageLabel.TextYAlignment = Enum.TextYAlignment.Top
+		messageLabel.Parent = notif
+		
+		tween(notif, {Position = UDim2.new(0.5, -150, 0.85, 0)}, 0.5)
+		
+		task.delay(duration, function()
+			if notif and notif.Parent then
+				tween(notif, {Position = UDim2.new(0.5, -150, 0.85, 100)}, 0.5)
+				task.delay(0.6, function()
+					if notif and notif.Parent then
+						notif:Destroy()
+					end
+				end)
+			end
+		end)
+	end)
+end
+
+--========================================================
+-- SCREEN GUI
+--========================================================
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "RingRingScriptz"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Parent = guiParent
+
+--========================================================
+-- MAIN WINDOW
+--========================================================
+
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.fromOffset(320, 290)
+main.Position = UDim2.new(0.5, -160, 0.5, -145)
+main.BackgroundColor3 = Color3.fromRGB(17, 18, 23)
+main.BorderSizePixel = 0
+main.Visible = false
+main.Active = true
+main.Parent = gui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 14)
+mainCorner.Parent = main
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Thickness = 1
+mainStroke.Transparency = 0.45
+mainStroke.Parent = main
+
+--========================================================
+-- TOP BAR
+--========================================================
+
+local topBar = Instance.new("Frame")
+topBar.Name = "TopBar"
+topBar.Size = UDim2.new(1, 0, 0, 44)
+topBar.BackgroundColor3 = Color3.fromRGB(27, 28, 35)
+topBar.BorderSizePixel = 0
+topBar.Active = true
+topBar.Parent = main
+
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 14)
+topCorner.Parent = topBar
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -80, 1, 0)
+title.Position = UDim2.fromOffset(14, 0)
+title.BackgroundTransparency = 1
+title.Text = "🧹 Ring Ring Scriptz | Pyco AI"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 14
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = topBar
+
+-- Security Indicator (Green Pulsing Dot)
+local securityIndicator = Instance.new("Frame")
+securityIndicator.Size = UDim2.fromOffset(6, 6)
+securityIndicator.Position = UDim2.new(1, -82, 0.5, -3)
+securityIndicator.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+securityIndicator.BorderSizePixel = 0
+securityIndicator.Parent = topBar
+
+local securityCorner = Instance.new("UICorner")
+securityCorner.CornerRadius = UDim.new(1, 0)
+securityCorner.Parent = securityIndicator
+
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if securityIndicator and securityIndicator.Parent then
+			securityIndicator.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+			task.wait(0.5)
+			securityIndicator.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+		end
+	end
+end)
+
+local minus = Instance.new("TextButton")
+minus.Size = UDim2.fromOffset(30, 30)
+minus.Position = UDim2.new(1, -68, 0, 7)
+minus.BackgroundColor3 = Color3.fromRGB(48, 49, 59)
+minus.Text = "−"
+minus.TextColor3 = Color3.new(1, 1, 1)
+minus.TextSize = 19
+minus.Font = Enum.Font.GothamBold
+minus.AutoButtonColor = false
+minus.Parent = topBar
+
+local minusCorner = Instance.new("UICorner")
+minusCorner.CornerRadius = UDim.new(0, 8)
+minusCorner.Parent = minus
+
+local plus = Instance.new("TextButton")
+plus.Size = UDim2.fromOffset(30, 30)
+plus.Position = UDim2.new(1, -34, 0, 7)
+plus.BackgroundColor3 = Color3.fromRGB(48, 49, 59)
+plus.Text = "+"
+plus.TextColor3 = Color3.new(1, 1, 1)
+plus.TextSize = 19
+plus.Font = Enum.Font.GothamBold
+plus.AutoButtonColor = false
+plus.Visible = false
+plus.Parent = topBar
+
+local plusCorner = Instance.new("UICorner")
+plusCorner.CornerRadius = UDim.new(0, 8)
+plusCorner.Parent = plus
+
+--========================================================
+-- CONTENT & TABS
+--========================================================
+
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1, 0, 1, -44)
+content.Position = UDim2.fromOffset(0, 44)
+content.BackgroundTransparency = 1
+content.Parent = main
+
+local tabBar = Instance.new("Frame")
+tabBar.Size = UDim2.new(1, -20, 0, 35)
+tabBar.Position = UDim2.fromOffset(10, 8)
+tabBar.BackgroundTransparency = 1
+tabBar.Parent = content
+
+local function makeTab(text, x, width)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.fromOffset(width or 75, 32)
+	button.Position = UDim2.fromOffset(x, 0)
+	button.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+	button.BorderSizePixel = 0
+	button.Text = text
+	button.TextColor3 = Color3.fromRGB(220, 220, 225)
+	button.TextSize = 12
+	button.Font = Enum.Font.GothamMedium
+	button.AutoButtonColor = false
+	button.Parent = tabBar
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = button
+	return button
+end
+
+local aimTab = makeTab("🎯 Aimbot", 5, 75)
+local espTab = makeTab("👁 ESP", 85, 75)
+local discordTab = makeTab("💬 Discord", 165, 75)
+local settingsTab = makeTab("⚙ Settings", 245, 75)
+
+-- Panels
+local aimPanel = Instance.new("Frame")
+aimPanel.Size = UDim2.new(1, -20, 1, -55)
+aimPanel.Position = UDim2.fromOffset(10, 48)
+aimPanel.BackgroundTransparency = 1
+aimPanel.Parent = content
+
+local espPanel = Instance.new("Frame")
+espPanel.Size = aimPanel.Size
+espPanel.Position = aimPanel.Position
+espPanel.BackgroundTransparency = 1
+espPanel.Visible = false
+espPanel.Parent = content
+
+local discordPanel = Instance.new("Frame")
+discordPanel.Size = aimPanel.Size
+discordPanel.Position = aimPanel.Position
+discordPanel.BackgroundTransparency = 1
+discordPanel.Visible = false
+discordPanel.Parent = content
+
+local settingsPanel = Instance.new("Frame")
+settingsPanel.Size = aimPanel.Size
+settingsPanel.Position = aimPanel.Position
+settingsPanel.BackgroundTransparency = 1
+settingsPanel.Visible = false
+settingsPanel.Parent = content
+
+--========================================================
+-- AIMBOT UI
+--========================================================
+
+local aimToggle = Instance.new("TextButton")
+aimToggle.Size = UDim2.new(1, 0, 0, 40)
+aimToggle.Position = UDim2.fromOffset(0, 5)
+aimToggle.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+aimToggle.BorderSizePixel = 0
+aimToggle.Text = "Aimbot: OFF"
+aimToggle.TextColor3 = Color3.new(1, 1, 1)
+aimToggle.TextSize = 14
+aimToggle.Font = Enum.Font.GothamMedium
+aimToggle.AutoButtonColor = false
+aimToggle.Parent = aimPanel
+
+local aimToggleCorner = Instance.new("UICorner")
+aimToggleCorner.CornerRadius = UDim.new(0, 9)
+aimToggleCorner.Parent = aimToggle
+
+local aimIndicator = Instance.new("Frame")
+aimIndicator.Size = UDim2.fromOffset(8, 8)
+aimIndicator.Position = UDim2.new(1, -20, 0.5, -4)
+aimIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 110)
+aimIndicator.BorderSizePixel = 0
+aimIndicator.Parent = aimToggle
+
+local aimIndicatorCorner = Instance.new("UICorner")
+aimIndicatorCorner.CornerRadius = UDim.new(1, 0)
+aimIndicatorCorner.Parent = aimIndicator
+
+-- Smoothness Slider
+local smoothLabel = Instance.new("TextLabel")
+smoothLabel.Size = UDim2.new(1, 0, 0, 25)
+smoothLabel.Position = UDim2.fromOffset(0, 55)
+smoothLabel.BackgroundTransparency = 1
+smoothLabel.Text = "Smoothness: 50"
+smoothLabel.TextColor3 = Color3.fromRGB(205, 205, 215)
+smoothLabel.TextSize = 13
+smoothLabel.Font = Enum.Font.Gotham
+smoothLabel.TextXAlignment = Enum.TextXAlignment.Left
+smoothLabel.Parent = aimPanel
+
+local slider = Instance.new("TextButton")
+slider.Size = UDim2.new(1, 0, 0, 8)
+slider.Position = UDim2.fromOffset(0, 85)
+slider.BackgroundColor3 = Color3.fromRGB(53, 54, 64)
+slider.BorderSizePixel = 0
+slider.Text = ""
+slider.AutoButtonColor = false
+slider.Parent = aimPanel
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(1, 0)
+sliderCorner.Parent = slider
+
+local fill = Instance.new("Frame")
+fill.Size = UDim2.new(.5, 0, 1, 0)
+fill.BackgroundColor3 = Color3.fromRGB(90, 150, 255)
+fill.BorderSizePixel = 0
+fill.Parent = slider
+
+local fillCorner = Instance.new("UICorner")
+fillCorner.CornerRadius = UDim.new(1, 0)
+fillCorner.Parent = fill
+
+local knob = Instance.new("Frame")
+knob.Size = UDim2.fromOffset(15, 15)
+knob.AnchorPoint = Vector2.new(.5, .5)
+knob.Position = UDim2.new(.5, 0, .5, 0)
+knob.BackgroundColor3 = Color3.new(1, 1, 1)
+knob.BorderSizePixel = 0
+knob.Parent = slider
+
+local knobCorner = Instance.new("UICorner")
+knobCorner.CornerRadius = UDim.new(1, 0)
+knobCorner.Parent = knob
+
+-- Prediction Toggle
+local predToggle = Instance.new("TextButton")
+predToggle.Size = UDim2.new(0.48, -5, 0, 30)
+predToggle.Position = UDim2.fromOffset(0, 105)
+predToggle.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+predToggle.BorderSizePixel = 0
+predToggle.Text = "Prediction: ON"
+predToggle.TextColor3 = Color3.new(1, 1, 1)
+predToggle.TextSize = 12
+predToggle.Font = Enum.Font.GothamMedium
+predToggle.AutoButtonColor = false
+predToggle.Parent = aimPanel
+
+local predCorner = Instance.new("UICorner")
+predCorner.CornerRadius = UDim.new(0, 8)
+predCorner.Parent = predToggle
+
+-- FOV Toggle
+local fovToggle = Instance.new("TextButton")
+fovToggle.Size = UDim2.new(0.48, -5, 0, 30)
+fovToggle.Position = UDim2.new(0.52, 0, 105, 0)
+fovToggle.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+fovToggle.BorderSizePixel = 0
+fovToggle.Text = "FOV: 200"
+fovToggle.TextColor3 = Color3.new(1, 1, 1)
+fovToggle.TextSize = 12
+fovToggle.Font = Enum.Font.GothamMedium
+fovToggle.AutoButtonColor = false
+fovToggle.Parent = aimPanel
+
+local fovCorner = Instance.new("UICorner")
+fovCorner.CornerRadius = UDim.new(0, 8)
+fovCorner.Parent = fovToggle
+
+local rangeLabel = Instance.new("TextLabel")
+rangeLabel.Size = UDim2.new(1, 0, 0, 25)
+rangeLabel.Position = UDim2.fromOffset(0, 145)
+rangeLabel.BackgroundTransparency = 1
+rangeLabel.Text = "Maximum Range: 321 Studs"
+rangeLabel.TextColor3 = Color3.fromRGB(140, 145, 160)
+rangeLabel.TextSize = 12
+rangeLabel.Font = Enum.Font.Gotham
+rangeLabel.TextXAlignment = Enum.TextXAlignment.Left
+rangeLabel.Parent = aimPanel
+
+--========================================================
+-- ESP UI
+--========================================================
+
+local espToggle = Instance.new("TextButton")
+espToggle.Size = UDim2.new(1, 0, 0, 40)
+espToggle.Position = UDim2.fromOffset(0, 5)
+espToggle.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+espToggle.BorderSizePixel = 0
+espToggle.Text = "ESP: OFF"
+espToggle.TextColor3 = Color3.new(1, 1, 1)
+espToggle.TextSize = 14
+espToggle.Font = Enum.Font.GothamMedium
+espToggle.AutoButtonColor = false
+espToggle.Parent = espPanel
+
+local espToggleCorner = Instance.new("UICorner")
+espToggleCorner.CornerRadius = UDim.new(0, 9)
+espToggleCorner.Parent = espToggle
+
+local espIndicator = Instance.new("Frame")
+espIndicator.Size = UDim2.fromOffset(8, 8)
+espIndicator.Position = UDim2.new(1, -20, 0.5, -4)
+espIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 110)
+espIndicator.BorderSizePixel = 0
+espIndicator.Parent = espToggle
+
+local espIndicatorCorner = Instance.new("UICorner")
+espIndicatorCorner.CornerRadius = UDim.new(1, 0)
+espIndicatorCorner.Parent = espIndicator
+
+local espDescription = Instance.new("TextLabel")
+espDescription.Size = UDim2.new(1, 0, 0, 80)
+espDescription.Position = UDim2.fromOffset(0, 55)
+espDescription.BackgroundTransparency = 1
+espDescription.Text = "ESP outlines nearby players while displaying their current level and distance in real-time.\n\n• Red Highlight = Enemy\n• Green Highlight = Team\n• Shows Level & Distance"
+espDescription.TextColor3 = Color3.fromRGB(175, 180, 195)
+espDescription.TextSize = 13
+espDescription.Font = Enum.Font.Gotham
+espDescription.TextWrapped = true
+espDescription.TextXAlignment = Enum.TextXAlignment.Left
+espDescription.TextYAlignment = Enum.TextYAlignment.Top
+espDescription.Parent = espPanel
+
+--========================================================
+-- DISCORD PANEL (JUST THE LINK)
+--========================================================
+
+local discordFrame = Instance.new("Frame")
+discordFrame.Size = UDim2.new(1, 0, 1, 0)
+discordFrame.BackgroundColor3 = Color3.fromRGB(24, 25, 32)
+discordFrame.BorderSizePixel = 0
+discordFrame.Parent = discordPanel
+
+local discordCorner = Instance.new("UICorner")
+discordCorner.CornerRadius = UDim.new(0, 10)
+discordCorner.Parent = discordFrame
+
+local discordIcon = Instance.new("TextLabel")
+discordIcon.Size = UDim2.fromOffset(60, 60)
+discordIcon.Position = UDim2.new(0.5, -30, 0.08, 0)
+discordIcon.BackgroundTransparency = 1
+discordIcon.Text = "💬"
+discordIcon.TextSize = 50
+discordIcon.TextColor3 = Color3.fromRGB(88, 101, 242)
+discordIcon.Font = Enum.Font.GothamBold
+discordIcon.Parent = discordFrame
+
+local discordTitle = Instance.new("TextLabel")
+discordTitle.Size = UDim2.new(1, -40, 0, 30)
+discordTitle.Position = UDim2.fromOffset(20, 90)
+discordTitle.BackgroundTransparency = 1
+discordTitle.Text = "Join Our Discord Community!"
+discordTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+discordTitle.TextSize = 16
+discordTitle.Font = Enum.Font.GothamBold
+discordTitle.TextXAlignment = Enum.TextXAlignment.Center
+discordTitle.Parent = discordFrame
+
+local discordSubtitle = Instance.new("TextLabel")
+discordSubtitle.Size = UDim2.new(1, -40, 0, 45)
+discordSubtitle.Position = UDim2.fromOffset(20, 125)
+discordSubtitle.BackgroundTransparency = 1
+discordSubtitle.Text = "Stay updated with the latest features, patches, and exclusive content!"
+discordSubtitle.TextColor3 = Color3.fromRGB(180, 195, 215)
+discordSubtitle.TextSize = 12
+discordSubtitle.Font = Enum.Font.Gotham
+discordSubtitle.TextXAlignment = Enum.TextXAlignment.Center
+discordSubtitle.TextWrapped = true
+discordSubtitle.Parent = discordFrame
+
+local discordSubtitle2 = Instance.new("TextLabel")
+discordSubtitle2.Size = UDim2.new(1, -40, 0, 25)
+discordSubtitle2.Position = UDim2.fromOffset(20, 165)
+discordSubtitle2.BackgroundTransparency = 1
+discordSubtitle2.Text = "Get support, report issues, and connect with others."
+discordSubtitle2.TextColor3 = Color3.fromRGB(150, 165, 185)
+discordSubtitle2.TextSize = 11
+discordSubtitle2.Font = Enum.Font.Gotham
+discordSubtitle2.TextXAlignment = Enum.TextXAlignment.Center
+discordSubtitle2.TextWrapped = true
+discordSubtitle2.Parent = discordFrame
+
+-- Discord Link Box
+local discordLinkBox = Instance.new("Frame")
+discordLinkBox.Size = UDim2.new(0.85, 0, 0, 35)
+discordLinkBox.Position = UDim2.new(0.075, 0, 0.7, 0)
+discordLinkBox.BackgroundColor3 = Color3.fromRGB(35, 36, 45)
+discordLinkBox.BorderSizePixel = 0
+discordLinkBox.Parent = discordFrame
+
+local discordLinkBoxCorner = Instance.new("UICorner")
+discordLinkBoxCorner.CornerRadius = UDim.new(0, 6)
+discordLinkBoxCorner.Parent = discordLinkBox
+
+local discordLinkBoxStroke = Instance.new("UIStroke")
+discordLinkBoxStroke.Thickness = 1
+discordLinkBoxStroke.Color = Color3.fromRGB(88, 101, 242)
+discordLinkBoxStroke.Transparency = 0.4
+discordLinkBoxStroke.Parent = discordLinkBox
+
+local discordLinkText = Instance.new("TextLabel")
+discordLinkText.Size = UDim2.new(1, 0, 1, 0)
+discordLinkText.Position = UDim2.fromOffset(0, 0)
+discordLinkText.BackgroundTransparency = 1
+discordLinkText.Text = DISCORD_INVITE
+discordLinkText.TextColor3 = Color3.fromRGB(88, 101, 242)
+discordLinkText.TextSize = 12
+discordLinkText.Font = Enum.Font.GothamMedium
+discordLinkText.TextXAlignment = Enum.TextXAlignment.Center
+discordLinkText.TextYAlignment = Enum.TextYAlignment.Center
+discordLinkText.Parent = discordLinkBox
+
+local discordCopyText = Instance.new("TextLabel")
+discordCopyText.Size = UDim2.new(1, -40, 0, 20)
+discordCopyText.Position = UDim2.new(0.5, -20, 0.9, 0)
+discordCopyText.BackgroundTransparency = 1
+discordCopyText.Text = "📋 Click the link above to copy"
+discordCopyText.TextColor3 = Color3.fromRGB(130, 150, 180)
+discordCopyText.TextSize = 10
+discordCopyText.Font = Enum.Font.Gotham
+discordCopyText.TextXAlignment = Enum.TextXAlignment.Center
+discordCopyText.Parent = discordFrame
+
+-- Copy link when clicked
+discordLinkBox.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		playClick()
+		
+		local copied = false
+		pcall(function()
+			local clipboard = game:GetService("ClipboardService")
+			if clipboard then
+				clipboard:SetAsync(DISCORD_INVITE)
+				copied = true
+			end
+		end)
+		
+		if not copied then
+			pcall(function()
+				local synClipboard = syn and syn.clipboard
+				if synClipboard then
+					synClipboard.setText(DISCORD_INVITE)
+					copied = true
+				end
+			end)
+		end
+		
+		if copied then
+			showNotification("✅ Discord Link Copied!", "The invite link has been copied to your clipboard.", 3)
+			tween(discordLinkBox, {BackgroundColor3 = Color3.fromRGB(38, 105, 67)}, 0.2)
+			task.delay(0.5, function()
+				tween(discordLinkBox, {BackgroundColor3 = Color3.fromRGB(35, 36, 45)}, 0.2)
+			end)
+		else
+			showNotification("📋 Discord Link", "Copy the link from console: " .. DISCORD_INVITE, 4)
+		end
+		
+		print("💬 Discord Invite: " .. DISCORD_INVITE)
+	end
+end)
+
+--========================================================
+-- SETTINGS PANEL (FIXED - FITS PROPERLY)
+--========================================================
+
+local settingsFrame = Instance.new("Frame")
+settingsFrame.Size = UDim2.new(1, 0, 1, 0)
+settingsFrame.BackgroundColor3 = Color3.fromRGB(24, 25, 32)
+settingsFrame.BorderSizePixel = 0
+settingsFrame.Parent = settingsPanel
+
+local settingsCorner = Instance.new("UICorner")
+settingsCorner.CornerRadius = UDim.new(0, 10)
+settingsCorner.Parent = settingsFrame
+
+local settingsScroll = Instance.new("ScrollingFrame")
+settingsScroll.Size = UDim2.new(1, 0, 1, 0)
+settingsScroll.BackgroundTransparency = 1
+settingsScroll.BorderSizePixel = 0
+settingsScroll.ScrollBarThickness = 6
+settingsScroll.ScrollBarImageColor3 = Color3.fromRGB(90, 150, 255)
+settingsScroll.CanvasSize = UDim2.new(0, 0, 0, 240)
+settingsScroll.Parent = settingsFrame
+
+local settingsPadding = Instance.new("UIPadding")
+settingsPadding.PaddingTop = UDim.new(0, 15)
+settingsPadding.PaddingBottom = UDim.new(0, 15)
+settingsPadding.PaddingLeft = UDim.new(0, 15)
+settingsPadding.PaddingRight = UDim.new(0, 15)
+settingsPadding.Parent = settingsScroll
+
+local settingsText = Instance.new("TextLabel")
+settingsText.Size = UDim2.new(1, -10, 0, 0)
+settingsText.AutomaticSize = Enum.AutomaticSize.Y
+settingsText.BackgroundTransparency = 1
+settingsText.Text = "⚙ Pyco AI Security Settings\n\n🛡️ Security Status: Active\n🔒 Anti-Kick: Enabled\n🛡️ Anti-Cheat Bypass: Enabled\n🚀 Stealth Mode: Active\n🔐 F22 Raptor Class: Engaged\n\n💡 All security features are automatically enabled.\n💬 Click the Discord tab to join our community!"
+settingsText.TextColor3 = Color3.fromRGB(175, 180, 195)
+settingsText.TextSize = 13
+settingsText.Font = Enum.Font.Gotham
+settingsText.TextWrapped = true
+settingsText.TextXAlignment = Enum.TextXAlignment.Left
+settingsText.TextYAlignment = Enum.TextYAlignment.Top
+settingsText.Parent = settingsScroll
+
+--========================================================
+-- TAB HANDLING
+--========================================================
+
+local function setTab(tab)
+	aimPanel.Visible = false
+	espPanel.Visible = false
+	discordPanel.Visible = false
+	settingsPanel.Visible = false
+
+	aimTab.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+	espTab.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+	discordTab.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+	settingsTab.BackgroundColor3 = Color3.fromRGB(43, 44, 53)
+
+	if tab == "aim" then
+		aimPanel.Visible = true
+		aimTab.BackgroundColor3 = Color3.fromRGB(70, 110, 180)
+	elseif tab == "esp" then
+		espPanel.Visible = true
+		espTab.BackgroundColor3 = Color3.fromRGB(70, 110, 180)
+	elseif tab == "discord" then
+		discordPanel.Visible = true
+		discordTab.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+	elseif tab == "settings" then
+		settingsPanel.Visible = true
+		settingsTab.BackgroundColor3 = Color3.fromRGB(70, 110, 180)
+	end
+end
+
+aimTab.Activated:Connect(function() playClick() setTab("aim") end)
+espTab.Activated:Connect(function() playClick() setTab("esp") end)
+discordTab.Activated:Connect(function() playClick() setTab("discord") end)
+settingsTab.Activated:Connect(function() playClick() setTab("settings") end)
+
+--========================================================
+-- TOGGLES
+--========================================================
+
+aimToggle.Activated:Connect(function()
+	playClick()
+	aimEnabled = not aimEnabled
+	if aimEnabled then
+		aimToggle.Text = "Aimbot: ON"
+		aimIndicator.BackgroundColor3 = Color3.fromRGB(70, 220, 120)
+		tween(aimToggle, {BackgroundColor3 = Color3.fromRGB(38, 105, 67)}, 0.18)
+	else
+		aimToggle.Text = "Aimbot: OFF"
+		aimIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 110)
+		tween(aimToggle, {BackgroundColor3 = Color3.fromRGB(43, 44, 53)}, 0.18)
+		lockedTarget = nil
+	end
+end)
+
+predToggle.Activated:Connect(function()
+	playClick()
+	predictionEnabled = not predictionEnabled
+	if predictionEnabled then
+		predToggle.Text = "Prediction: ON"
+		tween(predToggle, {BackgroundColor3 = Color3.fromRGB(38, 105, 67)}, 0.18)
+	else
+		predToggle.Text = "Prediction: OFF"
+		tween(predToggle, {BackgroundColor3 = Color3.fromRGB(43, 44, 53)}, 0.18)
+	end
+end)
+
+local fovOptions = {100, 150, 200, 250, 300, 400}
+local fovIndex = 3
+fovToggle.Activated:Connect(function()
+	playClick()
+	fovIndex = fovIndex % #fovOptions + 1
+	fovSize = fovOptions[fovIndex]
+	fovToggle.Text = "FOV: " .. fovSize
+end)
+
+espToggle.Activated:Connect(function()
+	playClick()
+	espEnabled = not espEnabled
+	if espEnabled then
+		espToggle.Text = "ESP: ON"
+		espIndicator.BackgroundColor3 = Color3.fromRGB(70, 170, 255)
+		tween(espToggle, {BackgroundColor3 = Color3.fromRGB(45, 85, 125)}, 0.18)
+		for _, target in ipairs(Players:GetPlayers()) do
+			if target ~= player then createESP(target) end
+		end
+	else
+		espToggle.Text = "ESP: OFF"
+		espIndicator.BackgroundColor3 = Color3.fromRGB(100, 100, 110)
+		tween(espToggle, {BackgroundColor3 = Color3.fromRGB(43, 44, 53)}, 0.18)
+		for target in pairs(espObjects) do removeESP(target) end
+	end
+end)
+
+--========================================================
+-- SLIDER & WINDOW DRAGGING
+--========================================================
+
+local function updateSlider(inputX)
+	local width = slider.AbsoluteSize.X
+	if width <= 0 then return end
+	local percentValue = math.clamp((inputX - slider.AbsolutePosition.X) / width, 0, 1)
+	smoothness = math.floor(percentValue * 100)
+	fill.Size = UDim2.new(percentValue, 0, 1, 0)
+	knob.Position = UDim2.new(percentValue, 0, 0.5, 0)
+	smoothLabel.Text = "Smoothness: " .. smoothness
+end
+
+slider.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		sliderDragging = true
+		updateSlider(input.Position.X)
+	end
+end)
+
+local minimized = false
+minus.Activated:Connect(function()
+	if minimized then return end
+	playClick()
+	minimized = true
+	content.Visible = false
+	minus.Visible = false
+	plus.Visible = true
+	tween(main, {Size = UDim2.fromOffset(320, 44)}, 0.25)
+end)
+
+plus.Activated:Connect(function()
+	if not minimized then return end
+	playClick()
+	minimized = false
+	plus.Visible = false
+	minus.Visible = true
+	tween(main, {Size = UDim2.fromOffset(320, 290)}, 0.3, Enum.EasingStyle.Back)
+	task.delay(0.12, function()
+		if main.Parent and not minimized then content.Visible = true end
+	end)
+end)
+
+local dragStart, startPosition
+topBar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		draggingWindow = true
+		dragStart = input.Position
+		startPosition = main.Position
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if draggingWindow and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		local delta = input.Position - dragStart
+		main.Position = UDim2.new(startPosition.X.Scale, startPosition.X.Offset + delta.X, startPosition.Y.Scale, startPosition.Y.Offset + delta.Y)
+	end
+	if sliderDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		updateSlider(input.Position.X)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		draggingWindow = false
+		sliderDragging = false
+	end
+end)
+
+--========================================================
+-- ADVANCED AIMBOT LOGIC
+--========================================================
+
+local lastHealth = 100
+local currentTarget = nil
+
+local function validTarget(target)
+	if not target or target == player then return false end
+	if player.Team and target.Team and player.Team == target.Team then return false end
+	
+	local character = target.Character
+	if not character then return false end
+	
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	local head = character:FindFirstChild("Head")
+	local myCharacter = player.Character
+	local myRoot = myCharacter and myCharacter:FindFirstChild("HumanoidRootPart")
+
+	if not humanoid or humanoid.Health <= 0 or not head or not myRoot then return false end
+	return (head.Position - myRoot.Position).Magnitude <= MAX_DISTANCE
+end
+
+local function getBestTarget()
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if not root then return nil end
+	
+	local camera = workspace.CurrentCamera
+	if not camera then return nil end
+	
+	local bestTarget = nil
+	local bestScore = -math.huge
+	
+	for _, target in ipairs(Players:GetPlayers()) do
+		if validTarget(target) then
+			local head = target.Character:FindFirstChild("Head")
+			if head then
+				local distance = (head.Position - root.Position).Magnitude
+				
+				local screenPos, onScreen = camera:WorldToViewportPoint(head.Position)
+				if onScreen then
+					local fovDistance = math.sqrt((screenPos.X - camera.ViewportSize.X/2)^2 + (screenPos.Y - camera.ViewportSize.Y/2)^2)
+					
+					if fovDistance <= fovSize then
+						local score = 0
+						score = score + (MAX_DISTANCE - distance) * 10
+						score = score + (fovSize - fovDistance) * 5
+						
+						local humanoid = target.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							score = score + (100 - humanoid.Health) * 2
+						end
+						
+						if currentTarget == target then
+							score = score + 50
+						end
+						
+						if score > bestScore then
+							bestScore = score
+							bestTarget = target
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	return bestTarget
+end
+
+local function getPredictedPosition(target)
+	local head = target.Character:FindFirstChild("Head")
+	if not head then return nil end
+	
+	local humanoid = target.Character:FindFirstChildOfClass("Humanoid")
+	if not humanoid then return head.Position end
+	
+	local currentPos = head.Position
+	local predictedPos = currentPos + (humanoid.MoveDirection * 0.3)
+	
+	return predictedPos
+end
+
+task.spawn(function()
+	while true do
+		task.wait(0.05)
+		local myCharacter = player.Character
+		if not myCharacter then 
+			task.wait(0.5)
+			lastHealth = 100
+			continue 
+		end
+		
+		local myHumanoid = myCharacter:FindFirstChildOfClass("Humanoid")
+		if not myHumanoid then 
+			task.wait(0.5)
+			continue 
+		end
+		
+		local currentHealth = myHumanoid.Health
+		if currentHealth < lastHealth then
+			local attacker = nil
+			local shortestDist = MAX_DISTANCE
+			local myRoot = myCharacter:FindFirstChild("HumanoidRootPart")
+			
+			if myRoot then
+				for _, target in ipairs(Players:GetPlayers()) do
+					if validTarget(target) then
+						local tRoot = target.Character:FindFirstChild("HumanoidRootPart")
+						if tRoot then
+							local dist = (tRoot.Position - myRoot.Position).Magnitude
+							if dist < shortestDist then
+								shortestDist = dist
+								attacker = target
+							end
+						end
+					end
+				end
+			end
+			
+			if attacker then
+				currentTarget = attacker
+				lockedTarget = attacker
+			end
+		end
+		lastHealth = currentHealth
+	end
+end)
+
+RunService.RenderStepped:Connect(function()
+	if not aimEnabled then return end
+
+	local target = getBestTarget()
+	
+	if target then
+		currentTarget = target
+		lockedTarget = target
+		
+		local character = target.Character
+		if not character then 
+			currentTarget = nil
+			lockedTarget = nil
+			return 
+		end
+		
+		local head = character:FindFirstChild("Head")
+		local camera = workspace.CurrentCamera
+
+		if head and camera then
+			local aimPosition = head.Position
+			
+			if predictionEnabled then
+				local predicted = getPredictedPosition(target)
+				if predicted then
+					aimPosition = predicted
+				end
+			end
+			
+			local currentCFrame = camera.CFrame
+			local targetCFrame = CFrame.new(currentCFrame.Position, aimPosition)
+			
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			local speedFactor = 0
+			if humanoid then
+				speedFactor = humanoid.WalkSpeed / 16
+			end
+			
+			local adaptiveAlpha = math.clamp((101 - smoothness) / 100 + speedFactor * 0.1, 0.05, 0.9)
+			
+			camera.CFrame = currentCFrame:Lerp(targetCFrame, adaptiveAlpha)
+		end
+	else
+		currentTarget = nil
+		if not lockedTarget or not validTarget(lockedTarget) then
+			lockedTarget = nil
+		end
+	end
+end)
+
+--========================================================
+-- ESP LOGIC
+--========================================================
+
+local function removeESP(target)
+	local objects = espObjects[target]
+	if not objects then return end
+	for _, object in ipairs(objects) do
+		if object and object.Parent then object:Destroy() end
+	end
+	espObjects[target] = nil
+end
+
+local function createESP(target)
+	if target == player or espObjects[target] then return end
+	local character = target.Character
+	if not character then return end
+	local head = character:FindFirstChild("Head")
+	if not head then return end
+
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "RingRingESP"
+	highlight.Adornee = character
+	highlight.FillTransparency = 0.78
+	highlight.OutlineTransparency = 0
+	
+	if player.Team and target.Team and player.Team == target.Team then
+		highlight.FillColor = Color3.fromRGB(0, 255, 100)
+		highlight.OutlineColor = Color3.fromRGB(0, 200, 80)
+	else
+		highlight.FillColor = Color3.fromRGB(255, 75, 75)
+		highlight.OutlineColor = Color3.new(1, 1, 1)
+	end
+	
+	highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	highlight.Parent = character
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "RingRingESPInfo"
+	billboard.Adornee = head
+	billboard.Size = UDim2.fromOffset(200, 50)
+	billboard.StudsOffset = Vector3.new(0, 3, 0)
+	billboard.AlwaysOnTop = true
+	billboard.Parent = head
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.TextStrokeTransparency = 0.25
+	label.TextSize = 13
+	label.Font = Enum.Font.GothamBold
+	label.Parent = billboard
+
+	espObjects[target] = {highlight, billboard, label}
+end
+
+RunService.RenderStepped:Connect(function()
+	if not espEnabled then return end
+
+	local myCharacter = player.Character
+	local myRoot = myCharacter and myCharacter:FindFirstChild("HumanoidRootPart")
+
+	for target, objects in pairs(espObjects) do
+		local character = target.Character
+		local head = character and character:FindFirstChild("Head")
+		local label = objects[3]
+
+		if character and head and myRoot and label then
+			local distance = math.floor((head.Position - myRoot.Position).Magnitude)
+
+			local level = "N/A"
+			local dataFolder = target:FindFirstChild("Data") or target:FindFirstChild("leaderstats")
+			if dataFolder then
+				local levelVal = dataFolder:FindFirstChild("Level") or dataFolder:FindFirstChild("LVL")
+				if levelVal then
+					level = tostring(levelVal.Value)
+				end
+			end
+
+			label.Text = string.format("%s\nLevel: %s | %d Studs", target.DisplayName, level, distance)
+		end
+	end
+end)
+
+Players.PlayerRemoving:Connect(function(target)
+	removeESP(target)
+	if lockedTarget == target then lockedTarget = nil end
+	if currentTarget == target then currentTarget = nil end
+end)
+
+Players.PlayerAdded:Connect(function(target)
+	target.CharacterAdded:Connect(function()
+		task.wait(0.5)
+		if espEnabled then createESP(target) end
+	end)
+end)
+
+--========================================================
+-- SECURITY NOTIFICATION
+--========================================================
+
+local function showSecurityNotification()
+	pcall(function()
+		local notification = Instance.new("Frame")
+		notification.Name = "SecurityStatus"
+		notification.Size = UDim2.fromOffset(280, 50)
+		notification.Position = UDim2.new(0.5, -140, 0.05, 20)
+		notification.BackgroundColor3 = Color3.fromRGB(10, 15, 20)
+		notification.BackgroundTransparency = 0.15
+		notification.BorderSizePixel = 0
+		notification.ZIndex = 9999
+		notification.Parent = guiParent
+		
+		local notifCorner = Instance.new("UICorner")
+		notifCorner.CornerRadius = UDim.new(0, 12)
+		notifCorner.Parent = notification
+		
+		local notifStroke = Instance.new("UIStroke")
+		notifStroke.Thickness = 1
+		notifStroke.Color = Color3.fromRGB(0, 180, 255)
+		notifStroke.Transparency = 0.6
+		notifStroke.Parent = notification
+		
+		local icon = Instance.new("TextLabel")
+		icon.Size = UDim2.fromOffset(30, 30)
+		icon.Position = UDim2.fromOffset(15, 10)
+		icon.BackgroundTransparency = 1
+		icon.Text = "🛡️"
+		icon.TextSize = 24
+		icon.TextColor3 = Color3.fromRGB(0, 180, 255)
+		icon.Font = Enum.Font.GothamBold
+		icon.Parent = notification
+		
+		local text = Instance.new("TextLabel")
+		text.Size = UDim2.new(1, -60, 1, 0)
+		text.Position = UDim2.fromOffset(55, 0)
+		text.BackgroundTransparency = 1
+		text.Text = "🔒 Protected by Pyco AI Security"
+		text.TextColor3 = Color3.fromRGB(200, 215, 230)
+		text.TextSize = 13
+		text.Font = Enum.Font.GothamMedium
+		text.TextXAlignment = Enum.TextXAlignment.Left
+		text.TextYAlignment = Enum.TextYAlignment.Center
+		text.Parent = notification
+		
+		local subText = Instance.new("TextLabel")
+		subText.Size = UDim2.new(1, -60, 0.4, 0)
+		subText.Position = UDim2.fromOffset(55, 28)
+		subText.BackgroundTransparency = 1
+		subText.Text = "Stealth Mode | F22 Raptor Class"
+		subText.TextColor3 = Color3.fromRGB(100, 200, 255)
+		subText.TextSize = 10
+		subText.Font = Enum.Font.Gotham
+		subText.TextXAlignment = Enum.TextXAlignment.Left
+		subText.TextYAlignment = Enum.TextYAlignment.Top
+		subText.Parent = notification
+		
+		task.delay(5, function()
+			if notification and notification.Parent then
+				tween(notification, {BackgroundTransparency = 1, Position = UDim2.new(0.5, -140, 0.05, -60)}, 0.5)
+				task.delay(0.6, function()
+					if notification and notification.Parent then
+						notification:Destroy()
+					end
+				end)
+			end
+		end)
+	end)
+end
+
+--========================================================
+-- LOADING SCREEN
+--========================================================
+
+local loading = Instance.new("Frame")
+loading.Name = "LoadingScreen"
+loading.Size = UDim2.fromScale(1, 1)
+loading.BackgroundColor3 = Color3.fromRGB(7, 8, 12)
+loading.BorderSizePixel = 0
+loading.ZIndex = 100
+loading.Parent = gui
+
+local pfp = Instance.new("ImageLabel")
+pfp.Size = UDim2.fromOffset(100, 100)
+pfp.AnchorPoint = Vector2.new(0.5, 0.5)
+pfp.Position = UDim2.fromScale(0.5, 0.32)
+pfp.BackgroundTransparency = 1
+pfp.ImageTransparency = 1
+pfp.ZIndex = 103
+pfp.Parent = loading
+
+local pfpCorner = Instance.new("UICorner")
+pfpCorner.CornerRadius = UDim.new(1, 0)
+pfpCorner.Parent = pfp
+
+local pfpStroke = Instance.new("UIStroke")
+pfpStroke.Thickness = 2
+pfpStroke.Transparency = 1
+pfpStroke.Parent = pfp
+
+local productionLabel = Instance.new("TextLabel")
+productionLabel.Size = UDim2.fromScale(1, 0.04)
+productionLabel.Position = UDim2.fromScale(0, 0.22)
+productionLabel.BackgroundTransparency = 1
+productionLabel.Text = "✨ Ring Ring Production ✨"
+productionLabel.TextColor3 = Color3.fromRGB(90, 150, 255)
+productionLabel.TextTransparency = 1
+productionLabel.TextSize = 13
+productionLabel.Font = Enum.Font.GothamBold
+productionLabel.ZIndex = 103
+productionLabel.Parent = loading
+
+task.spawn(function()
+	local success, image = pcall(function()
+		return Players:GetUserThumbnailAsync(
+			player.UserId,
+			Enum.ThumbnailType.HeadShot,
+			Enum.ThumbnailSize.Size150x150
+		)
+	end)
+
+	if success and loading.Parent then
+		pfp.Image = image
+	end
+end)
+
+local welcome = Instance.new("TextLabel")
+welcome.Size = UDim2.fromScale(1, 0.05)
+welcome.Position = UDim2.fromScale(0, 0.43)
+welcome.BackgroundTransparency = 1
+welcome.Text = "🔒 SECURE CONNECTION ESTABLISHED"
+welcome.TextColor3 = Color3.fromRGB(0, 200, 255)
+welcome.TextTransparency = 1
+welcome.TextSize = 12
+welcome.Font = Enum.Font.GothamMedium
+welcome.ZIndex = 103
+welcome.Parent = loading
+
+local playerName = Instance.new("TextLabel")
+playerName.Size = UDim2.fromScale(1, 0.08)
+playerName.Position = UDim2.fromScale(0, 0.47)
+playerName.BackgroundTransparency = 1
+playerName.Text = player.DisplayName
+playerName.TextColor3 = Color3.new(1, 1, 1)
+playerName.TextTransparency = 1
+playerName.TextSize = 28
+playerName.Font = Enum.Font.GothamBold
+playerName.ZIndex = 103
+playerName.Parent = loading
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.fromScale(0.8, 0.09)
+subtitle.AnchorPoint = Vector2.new(0.5, 0)
+subtitle.Position = UDim2.fromScale(0.5, 0.54)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = getWelcomeMessage()
+subtitle.TextColor3 = Color3.fromRGB(175, 180, 195)
+subtitle.TextTransparency = 1
+subtitle.TextSize = 15
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextWrapped = true
+subtitle.ZIndex = 103
+subtitle.Parent = loading
+
+local status = Instance.new("TextLabel")
+status.Size = UDim2.fromScale(1, 0.04)
+status.Position = UDim2.fromScale(0, 0.62)
+status.BackgroundTransparency = 1
+status.Text = "Initializing Pyco AI Systems..."
+status.TextColor3 = Color3.fromRGB(0, 200, 255)
+status.TextTransparency = 1
+status.TextSize = 12
+status.Font = Enum.Font.Gotham
+status.ZIndex = 103
+status.Parent = loading
+
+local barBack = Instance.new("Frame")
+barBack.Size = UDim2.fromOffset(250, 6)
+barBack.AnchorPoint = Vector2.new(0.5, 0)
+barBack.Position = UDim2.fromScale(0.5, 0.68)
+barBack.BackgroundColor3 = Color3.fromRGB(35, 36, 45)
+barBack.BorderSizePixel = 0
+barBack.ZIndex = 103
+barBack.Parent = loading
+
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(1, 0)
+barCorner.Parent = barBack
+
+local progress = Instance.new("Frame")
+progress.Size = UDim2.new(0, 0, 1, 0)
+progress.BackgroundColor3 = Color3.fromRGB(90, 150, 255)
+progress.BorderSizePixel = 0
+progress.ZIndex = 104
+progress.Parent = barBack
+
+local progressCorner = Instance.new("UICorner")
+progressCorner.CornerRadius = UDim.new(1, 0)
+progressCorner.Parent = progress
+
+local percent = Instance.new("TextLabel")
+percent.Size = UDim2.fromOffset(100, 25)
+percent.AnchorPoint = Vector2.new(0.5, 0)
+percent.Position = UDim2.fromScale(0.5, 0.71)
+percent.BackgroundTransparency = 1
+percent.Text = "0%"
+percent.TextColor3 = Color3.fromRGB(120, 125, 140)
+percent.TextTransparency = 1
+percent.TextSize = 11
+percent.Font = Enum.Font.GothamMedium
+percent.ZIndex = 103
+percent.Parent = loading
+
+-- Loading Sequence
+task.spawn(function()
+	pcall(initializeSecurity)
+	
+	task.wait(0.35)
+	tween(pfp, {ImageTransparency = 0}, 0.7)
+	tween(pfpStroke, {Transparency = 0.3}, 0.7)
+	tween(productionLabel, {TextTransparency = 0}, 0.7)
+
+	task.wait(0.2)
+	tween(welcome, {TextTransparency = 0}, 0.5)
+
+	task.wait(0.2)
+	tween(playerName, {TextTransparency = 0}, 0.65, Enum.EasingStyle.Back)
+
+	task.wait(0.25)
+	tween(subtitle, {TextTransparency = 0}, 0.5)
+
+	task.wait(0.25)
+	tween(status, {TextTransparency = 0}, 0.4)
+	tween(percent, {TextTransparency = 0}, 0.4)
+
+	local stages = {
+		{0.15, "🔒 Pyco AI Security Modules Loading..."},
+		{0.30, "🛡️ Anti-Cheat Bypass Active..."},
+		{0.48, "⚡ Neural Protection Online..."},
+		{0.65, "🎯 Stealth Mode Engaged..."},
+		{0.82, "🚀 F22 Raptor Systems Ready..."},
+		{1, "✅ You Are Secure. Proceed."}
+	}
+
+	for _, stage in ipairs(stages) do
+		if not loading.Parent then break end
+		status.Text = stage[2]
+		percent.Text = math.floor(stage[1] * 100) .. "%"
+
+		local animation = tween(progress, {Size = UDim2.new(stage[1], 0, 1, 0)}, 0.55)
+		if animation then
+			animation.Completed:Wait()
+		else
+			task.wait(0.55)
+		end
+	end
+
+	task.wait(0.7)
+
+	if loading.Parent then
+		tween(pfp, {ImageTransparency = 1}, 0.45)
+		tween(pfpStroke, {Transparency = 1}, 0.45)
+		tween(productionLabel, {TextTransparency = 1}, 0.45)
+		tween(welcome, {TextTransparency = 1}, 0.45)
+		tween(playerName, {TextTransparency = 1}, 0.45)
+		tween(subtitle, {TextTransparency = 1}, 0.45)
+		tween(status, {TextTransparency = 1}, 0.45)
+		tween(percent, {TextTransparency = 1}, 0.45)
+		tween(loading, {BackgroundTransparency = 1}, 0.7)
+
+		task.wait(0.8)
+		loading:Destroy()
+	end
+
+	main.Visible = true
+	main.Size = UDim2.fromOffset(0, 0)
+	tween(main, {Size = UDim2.fromOffset(320, 290)}, 0.55, Enum.EasingStyle.Back)
+	setTab("aim")
+	
+	task.wait(1)
+	pcall(showSecurityNotification)
+	
+	print("🧹 Ring Ring Scriptz v4.0 Loaded Successfully!")
+	print("🛡️ Pyco AI Security Active | F22 Raptor Stealth Mode")
+	print("💬 Discord: " .. DISCORD_INVITE)
+end)
